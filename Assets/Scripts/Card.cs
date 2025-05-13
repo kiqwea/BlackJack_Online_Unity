@@ -16,13 +16,17 @@ public class Card : MonoBehaviour
     public bool isAce = false;
     private SpriteRenderer spriteRenderer;
 
+    
+
     void Start()
     {
-        spriteRenderer = GetComponent<SpriteRenderer>();
+        //spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     public void SetCard(int cardId, Sprite newSprite)
     {
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
         Debug.Log("1111");
 
         int x = (cardId + 2) % 13;
@@ -36,7 +40,6 @@ public class Card : MonoBehaviour
             value = 10;
             isAce = true;
         }
-        Debug.Log("22222");
 
         switch (cardId/13){
             case 0:
@@ -52,9 +55,9 @@ public class Card : MonoBehaviour
                 suit = Suit.Spades;
                 break;
         }
-        Debug.Log("33333");
+
+        //spriteRenderer = GetComponent<SpriteRenderer>();
 
         spriteRenderer.sprite = newSprite;
-        Debug.Log("4444");
     }
 }

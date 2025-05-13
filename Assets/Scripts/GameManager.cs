@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour
             newCard.transform.position = new Vector3(-2 + i * 1.5f, -2, 0); 
             Card card = newCard.GetComponent<Card>();
 
+            Debug.Log(cardSprites[cardIndex].name);
 
             card.SetCard(cardIndex, cardSprites[cardIndex]);
             playerCards.Add(card);
@@ -62,10 +63,13 @@ public class GameManager : MonoBehaviour
             GameObject newCard = Instantiate(cardPrefab, dealerHand);
             newCard.transform.position = new Vector3(-2 + i * 1.5f, 2, 0);
             Card card = newCard.GetComponent<Card>();
+
+            
             card.SetCard(cardIndex, cardSprites[cardIndex]);
             dealerCards.Add(card); 
         }
 
+        Debug.Log(playerCards.Count + " -- " + dealerCards.Count);
 
         int playerScore = CalculateScore(playerCards);
         playerScoreText.text = "Score: " + playerScore;
