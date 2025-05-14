@@ -23,21 +23,37 @@ public class Card : MonoBehaviour
         //spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
+    private int CardCalculate(int cardId){
+
+        int x = cardId;
+        while(x >=13){
+            x-=13;
+        }
+        x+=2;
+        
+        return x;
+    }
+
     public void SetCard(int cardId, Sprite newSprite)
     {
+        if (newSprite == null)
+        {
+            Debug.LogError($"cardIndex {cardId} returned null sprite!");
+        }
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        Debug.Log("1111");
+        
 
-        int x = (cardId + 2) % 13;
+        //int x = (cardId + 2) % 13;
+        int x = CardCalculate(cardId);
+        Debug.Log(x);
         if(x < 11){
             value = x;
         }
-        else if (x < 13){
+        else if (x <= 13){
             value = 10;
         }
         else{
-            value = 10;
             isAce = true;
         }
 
