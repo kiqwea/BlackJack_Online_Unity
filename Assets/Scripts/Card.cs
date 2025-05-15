@@ -16,11 +16,24 @@ public class Card : MonoBehaviour
     public bool isAce = false;
     private SpriteRenderer spriteRenderer;
 
+    private Sprite faceSprite;
+    public Sprite backSprite;
+
     
 
     void Start()
     {
         //spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    public void ShowFace()
+    {
+        spriteRenderer.sprite = faceSprite;
+    }
+
+    public void ShowBack()
+    {
+        spriteRenderer.sprite = backSprite;
     }
 
     private int CardCalculate(int cardId){
@@ -34,17 +47,13 @@ public class Card : MonoBehaviour
         return x;
     }
 
-    public void SetCard(int cardId, Sprite newSprite)
+    public void SetCard(int cardId, Sprite newFaceSprite, Sprite newBackSprite)
     {
-        if (newSprite == null)
-        {
-            Debug.LogError($"cardIndex {cardId} returned null sprite!");
-        }
+
         spriteRenderer = GetComponent<SpriteRenderer>();
-
+        faceSprite = newFaceSprite;
+        backSprite = newBackSprite;
         
-
-        //int x = (cardId + 2) % 13;
         int x = CardCalculate(cardId);
         Debug.Log(x);
         if(x < 11){
@@ -72,8 +81,8 @@ public class Card : MonoBehaviour
                 break;
         }
 
-        //spriteRenderer = GetComponent<SpriteRenderer>();
 
-        spriteRenderer.sprite = newSprite;
+        ShowFace();
+
     }
 }

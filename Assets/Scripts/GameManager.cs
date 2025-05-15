@@ -3,165 +3,124 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 using System.Linq;
+using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
     public GameObject cardPrefab;
+    public GameObject suitCardPrefab;
     public Transform playerHand;
     public Transform dealerHand;
     public TextMeshProUGUI playerScoreText;
+    public TextMeshProUGUI dealerScoreText;
+
 
     private Sprite[] cardSprites;
     private List<int> usedCards = new List<int>();
     private System.Random random = new System.Random();
-    private List<Card> playerCards = new List<Card>();
-    private List<Card> dealerCards = new List<Card>();
-    
+
+    Dealer dealer = new Dealer();
+    Player player = new Player();
+
 
     public Sprite cardsSprite;
+    public Sprite suitSprite;
 
     void Start()
     {
-
-        cardSprites = Resources.LoadAll<Sprite>("Sprites/cardatlas"); 
-
-        Debug.Log("lenght: " + cardSprites.Length);
+        cardSprites = Resources.LoadAll<Sprite>("Sprites/cardatlas");
 
         DealCards();
+        //SpawnSuit();
     }
 
     void DealCards()
     {
-   
         for (int i = 0; i < 2; i++)
         {
-            // int cardIndex;
-            // do
-            // {
-            //     cardIndex = random.Next(0, 52);
-            // } while (usedCards.Contains(cardIndex));
-            // usedCards.Add(cardIndex);
-
-
-            // GameObject newCard = Instantiate(cardPrefab, playerHand);
-            // newCard.transform.position = new Vector3(-2 + playerCards.Count * 1.3f, -2, -1); 
-            // Card card = newCard.GetComponent<Card>();
-
-
-            // Debug.Log(cardSprites[cardIndex].name);
-
-            // card.SetCard(cardIndex, cardSprites[cardIndex]);
-            // playerCards.Add(card);
             TakeNewcard(true);
         }
-        
+
 
         for (int i = 0; i < 2; i++)
         {
             TakeNewcard(false);
-            // int cardIndex;
-            // do
-            // {
-            //     cardIndex = random.Next(0, 52);
-            // } while (usedCards.Contains(cardIndex));
-            // usedCards.Add(cardIndex);
-
-            // GameObject newCard = Instantiate(cardPrefab, dealerHand);
-            // newCard.transform.position = new Vector3(-2 + dealerCards.Count * 1.3f, 2, -1);
-            // Card card = newCard.GetComponent<Card>();
-
-            
-            // card.SetCard(cardIndex, cardSprites[cardIndex]);
-            // dealerCards.Add(card); 
         }
 
-        Debug.Log(playerCards[0].value + " -- " + playerCards[1].value);
 
-        int playerScore = CalculateScore(ref playerCards);
-        playerScoreText.text = "Score: " + playerScore;
+        player.CalculateScore();
+        dealer.CalculateScore();
+        playerScoreText.text = "Your score: " + player.score;
+        dealerScoreText.text = "Dealer score:" + dealer.score;
+
     }
 
-    void TakeNewcard(bool isPayer){
-        int cardIndex;
-            do
-            {
-                cardIndex = random.Next(0, 52);
-            } while (usedCards.Contains(cardIndex));
-            usedCards.Add(cardIndex);
-
-
-            GameObject newCard = Instantiate(cardPrefab, playerHand);
-            if(isPayer){
-                newCard.transform.position = new Vector3(-2 + playerCards.Count * 1.3f, -2, -1); 
-            }else{
-                newCard.transform.position = new Vector3(-2 + dealerCards.Count * 1.3f, 2, -1); 
-            }
-            Card card = newCard.GetComponent<Card>();
-
-            Debug.Log(cardSprites[cardIndex].name);
-
-            card.SetCard(cardIndex, cardSprites[cardIndex]);
-            if(isPayer){
-                playerCards.Add(card);
-            }else{
-                dealerCards.Add(card);
-            }
-    }
-    public void HitBittonClick(){
-        int cardIndex;
-            do
-            {
-                cardIndex = random.Next(0, 52);
-            } while (usedCards.Contains(cardIndex));
-            usedCards.Add(cardIndex);
-
-
-            GameObject newCard = Instantiate(cardPrefab, playerHand);
-            newCard.transform.position = new Vector3(-2 + playerCards.Count * 1.3f, -2, -1); 
-            Card card = newCard.GetComponent<Card>();
-
-            Debug.Log(cardSprites[cardIndex].name);
-
-            card.SetCard(cardIndex, cardSprites[cardIndex]);
-            playerCards.Add(card);
-
-            playerScoreText.text = "Score: " + CalculateScore(ref playerCards);
-            //CalculateScore(ref playerCards);
-    }
-
-    private int CalculateScore(ref List<Card> cards)
+    void TakeNewcard(bool isPayer)
     {
-        int score = 0;
-        for (int i = 0; i < cards.Count; i++)
+        int cardIndex;
+        do
         {
-            if (cards[i].isAce && score + 11 <= 21){
-                score += 11;
-                cards[i].value = 11;
-            } 
-            else if (cards[i].isAce){
-                score += 1;
-                cards[i].value = 1;
-            }
-            else{
-                score += cards[i].value;
-                if(score > 21 && cards.Any(x => x.value == 11)){
-                    cards[cards.FindIndex(x => x.value == 11)].value = 1;
-                }
-            }
-                    
+            cardIndex = random.Next(0, 52);
+        } while (usedCards.Contains(cardIndex));
+        usedCards.Add(cardIndex);
+
+
+        GameObject newCard = Instantiate(cardPrefab, playerHand);
+        if (isPayer)
+        {
+            newCard.transform.position = new Vector3(-2 + player.cards.Count * 1.1f, -2, -1);
+            Card card = newCard.GetComponent<Card>();
+            card.SetCard(cardIndex, cardSprites[cardIndex], suitSprite);
+            player.cards.Add(card);
+            player.CalculateScore();
+            
         }
-        // foreach (Card card in cards)
-        // {
-        //     if (card != null)
-        //     {
-        //         if (card.isAce && score + 11 <= 21) 
-        //             score += 11;
-        //         else if (card.isAce)
-        //             score += 1;
-        //         else
-        //             score += card.value;
-        //     }
-        // }
-        return score;
+        else
+        {
+
+            newCard.transform.position = new Vector3(-2 + dealer.cards.Count * 1.1f, 2, -1);
+            if(dealer.cards.Count == 1)
+                newCard.transform.localScale = new Vector3(0.15f,0.15f,0);
+
+            Card card = newCard.GetComponent<Card>();
+            card.SetCard(cardIndex, cardSprites[cardIndex], suitSprite);
+            dealer.cards.Add(card);
+            dealer.CalculateScore();
+
+            if(dealer.cards.Count == 2)
+                card.ShowBack();
+            
+            
+        }
+        
+
     }
+    public void HitBittonClick()
+    {
+        TakeNewcard(true);
+
+        playerScoreText.text = "Your score: " + player.score;
+    }
+
+    public void StandButton()
+    {
+        while (dealer.score < 17)
+        {
+            TakeNewcard(false);
+            dealer.CalculateScore();
+        }
+
+        dealerScoreText.text = "Dealer score:" + dealer.score;
+    }
+
+    // void SpawnSuit()
+    // {
+    //     Vector3 spawnPosition = new Vector3(-1.5f, 0.7f, -2);
+    //     GameObject cardSuit = Instantiate(suitCardPrefab, spawnPosition, Quaternion.identity);
+        
+    // }
+
+
+
+
 }
