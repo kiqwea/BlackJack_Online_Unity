@@ -51,7 +51,6 @@ public class GameManager : MonoBehaviour
         player.CalculateScore();
         dealer.CalculateScore();
         playerScoreText.text = "Your score: " + player.score;
-        dealerScoreText.text = "Dealer score:" + dealer.score;
 
     }
 
@@ -79,8 +78,6 @@ public class GameManager : MonoBehaviour
         {
 
             newCard.transform.position = new Vector3(-2 + dealer.cards.Count * 1.1f, 2, -1);
-            if(dealer.cards.Count == 1)
-                newCard.transform.localScale = new Vector3(0.16f,0.16f,0);
 
             Card card = newCard.GetComponent<Card>();
             card.SetCard(cardIndex, cardSprites[cardIndex], suitSprite);
@@ -97,9 +94,11 @@ public class GameManager : MonoBehaviour
     }
     public void HitBittonClick()
     {
-        TakeNewcard(true);
-
-        playerScoreText.text = "Your score: " + player.score;
+        if(player.score < 21){
+            TakeNewcard(true);
+            playerScoreText.text = "Your score: " + player.score;
+        }
+        
     }
 
     public void StandButton()
@@ -112,14 +111,10 @@ public class GameManager : MonoBehaviour
         }
 
         dealerScoreText.text = "Dealer score:" + dealer.score;
+        
     }
 
-    // void SpawnSuit()
-    // {
-    //     Vector3 spawnPosition = new Vector3(-1.5f, 0.7f, -2);
-    //     GameObject cardSuit = Instantiate(suitCardPrefab, spawnPosition, Quaternion.identity);
-        
-    // }
+
 
 
 
