@@ -80,7 +80,7 @@ public class GameManager : MonoBehaviour
 
             newCard.transform.position = new Vector3(-2 + dealer.cards.Count * 1.1f, 2, -1);
             if(dealer.cards.Count == 1)
-                newCard.transform.localScale = new Vector3(0.15f,0.15f,0);
+                newCard.transform.localScale = new Vector3(0.16f,0.16f,0);
 
             Card card = newCard.GetComponent<Card>();
             card.SetCard(cardIndex, cardSprites[cardIndex], suitSprite);
@@ -106,6 +106,7 @@ public class GameManager : MonoBehaviour
     {
         while (dealer.score < 17)
         {
+            dealer.cards[1].ShowFace();
             TakeNewcard(false);
             dealer.CalculateScore();
         }
