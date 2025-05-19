@@ -7,7 +7,20 @@ using System.Linq;
 public class Player
 {
     public int score;
+    public int balance;
     public List<Card> cards = new List<Card>();
+
+    public Player(){
+        score = GetBalance();
+    }
+
+    private int GetBalance(){ //from bd
+        return 1000;
+    }
+
+    public void SetBalance(){ //balance to bd
+
+    }
 
     public void CalculateScore()
     {

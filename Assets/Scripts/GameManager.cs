@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using System.Linq;
 using UnityEngine.UIElements;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
     public Transform dealerHand;
     public TextMeshProUGUI playerScoreText;
     public TextMeshProUGUI dealerScoreText;
+    public UnityEngine.UI.Button newGameButton;
+    private List<GameObject> allCards = new List<GameObject>();
 
 
     private Sprite[] cardSprites;
@@ -26,8 +29,16 @@ public class GameManager : MonoBehaviour
     public Sprite cardsSprite;
     public Sprite suitSprite;
 
+    private int bet;
+    private enum resoult{
+        win,
+        loose,
+        push
+    }
+
     void Start()
     {
+        newGameButton.gameObject.SetActive(false);
         cardSprites = Resources.LoadAll<Sprite>("Sprites/cardatlas");
 
         DealCards();
@@ -51,6 +62,8 @@ public class GameManager : MonoBehaviour
         player.CalculateScore();
         dealer.CalculateScore();
         playerScoreText.text = "Your score: " + player.score;
+        dealerScoreText.gameObject.SetActive(false);
+
 
     }
 
@@ -89,6 +102,7 @@ public class GameManager : MonoBehaviour
             
             
         }
+        allCards.Add(newCard);
         
 
     }
@@ -97,6 +111,13 @@ public class GameManager : MonoBehaviour
         if(player.score < 21){
             TakeNewcard(true);
             playerScoreText.text = "Your score: " + player.score;
+        }
+
+        if(player.score > 21){
+            ResolveOutcome(resoult.loose);
+        }
+        else if(player.score == 21){
+            ResolveOutcome(resoult.win);
         }
         
     }
@@ -110,6 +131,34 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private resoult ResoultCheck(){
+        if(player.score > dealer.score || dealer.score > 21){
+            return resoult.win;
+        }
+        else if(player.score == dealer.score){
+            return resoult.push;
+        }
+        
+        return resoult.loose;
+    }
+
+    private void ResolveOutcome(resoult resoult){
+        if(bet > 0){
+            if(resoult == resoult.win){
+                player.balance += bet;
+                
+                bet = 0;
+            }
+            else if(resoult == resoult.loose){
+                player.balance =- bet;
+            }
+        }
+        player.SetBalance();
+        newGameButton.gameObject.SetActive(true);
+    }
+
+
+
     public void StandButton()
     {
         while (dealer.score < 17)
@@ -119,8 +168,25 @@ public class GameManager : MonoBehaviour
         }
         dealer.cards[1].ShowFace();
 
+        dealerScoreText.gameObject.SetActive(true);
         dealerScoreText.text = "Dealer score:" + dealer.score;
+
+        ResolveOutcome(ResoultCheck());
         
+    }
+
+    public void NewGameButton(){
+        newGameButton.gameObject.SetActive(false);
+
+        for (int i = 0; i < allCards.Count; i++)
+        {
+            Destroy(allCards[i]);
+        }
+        usedCards.Clear();
+        dealer.cards.Clear();
+        player.cards.Clear();
+        
+        DealCards();
     }
 
 
