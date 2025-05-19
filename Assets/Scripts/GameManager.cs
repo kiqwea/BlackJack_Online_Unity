@@ -101,22 +101,27 @@ public class GameManager : MonoBehaviour
         
     }
 
+    public void DoubleButtonClick(){
+
+    }
+    public void SplitButtonClick(){
+        if(player.cards.Count == 2 && player.cards[0].rank == player.cards[1].rank){
+            
+        }
+    }
+
     public void StandButton()
     {
         while (dealer.score < 17)
         {
-            dealer.cards[1].ShowFace();
             TakeNewcard(false);
             dealer.CalculateScore();
         }
+        dealer.cards[1].ShowFace();
 
         dealerScoreText.text = "Dealer score:" + dealer.score;
         
     }
-
-
-
-
 
 
 }

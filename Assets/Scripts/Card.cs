@@ -12,6 +12,7 @@ public class Card : MonoBehaviour
 
 
     public int value;
+    public int rank;
     public Suit suit;
     public bool isAce = false;
     private SpriteRenderer spriteRenderer;
@@ -54,12 +55,11 @@ public class Card : MonoBehaviour
         faceSprite = newFaceSprite;
         backSprite = newBackSprite;
         
-        int x = CardCalculate(cardId);
-        Debug.Log(x);
-        if(x < 11){
-            value = x;
+        rank = CardCalculate(cardId);
+        if(rank < 11){
+            value = rank;
         }
-        else if (x <= 13){
+        else if (rank <= 13){
             value = 10;
         }
         else{
