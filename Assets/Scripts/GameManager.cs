@@ -15,6 +15,9 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI playerScoreText;
     public TextMeshProUGUI dealerScoreText;
     public UnityEngine.UI.Button newGameButton;
+    public UnityEngine.UI.Button betButton;
+
+    public UnityEngine.UI.Slider betSlider;
     private List<GameObject> allCards = new List<GameObject>();
 
 
@@ -41,7 +44,7 @@ public class GameManager : MonoBehaviour
         newGameButton.gameObject.SetActive(false);
         cardSprites = Resources.LoadAll<Sprite>("Sprites/cardatlas");
 
-        DealCards();
+        NewGame();
         //SpawnSuit();
     }
 
@@ -175,8 +178,11 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public void NewGameButton(){
+    public void NewGame(){
+        betButton.GetComponentInChildren<TextMeshProUGUI>().text = ((int)betSlider.value).ToString();
+
         newGameButton.gameObject.SetActive(false);
+        SetSlider();
 
         for (int i = 0; i < allCards.Count; i++)
         {
@@ -187,6 +193,17 @@ public class GameManager : MonoBehaviour
         player.cards.Clear();
         
         DealCards();
+    }
+
+    private void SetSlider(){
+        betSlider.maxValue = player.balance;
+    }
+    public void SliderMoove(){
+        betButton.GetComponentInChildren<TextMeshProUGUI>().text = ((int)betSlider.value).ToString();
+    }
+
+    public void MakeBet(){
+        bet = (int)betSlider.value;
     }
 
 

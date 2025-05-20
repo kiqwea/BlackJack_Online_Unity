@@ -7,7 +7,7 @@ using System.Linq;
 public class Player
 {
     public int score;
-    public int balance;
+    public int balance = 1000;
     public List<Card> cards = new List<Card>();
 
     public Player(){
