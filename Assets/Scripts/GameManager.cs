@@ -14,6 +14,10 @@ public class GameManager : MonoBehaviour
     public Transform dealerHand;
     public TextMeshProUGUI playerScoreText;
     public TextMeshProUGUI dealerScoreText;
+    public TextMeshProUGUI betText;
+    public TextMeshProUGUI balanceText;
+
+
     public UnityEngine.UI.Button newGameButton;
     public UnityEngine.UI.Button betButton;
 
@@ -36,12 +40,12 @@ public class GameManager : MonoBehaviour
     private enum resoult{
         win,
         loose,
-        push
+        draw
     }
 
     void Start()
     {
-        newGameButton.gameObject.SetActive(false);
+        //newGameButton.gameObject.SetActive(false);
         cardSprites = Resources.LoadAll<Sprite>("Sprites/cardatlas");
 
         NewGame();
@@ -66,6 +70,11 @@ public class GameManager : MonoBehaviour
         dealer.CalculateScore();
         playerScoreText.text = "Your score: " + player.score;
         dealerScoreText.gameObject.SetActive(false);
+
+       if(player.score == 21){
+            ResultOutcome(resoult.win);
+       }
+
 
 
     }
@@ -113,15 +122,15 @@ public class GameManager : MonoBehaviour
     {
         if(player.score < 21){
             TakeNewcard(true);
-            playerScoreText.text = "Your score: " + player.score;
+        }
+        if(player.score == 21){
+            ResultOutcome(resoult.win);
+        }
+        else if(player.score > 21){
+            ResultOutcome(resoult.loose);
         }
 
-        if(player.score > 21){
-            ResolveOutcome(resoult.loose);
-        }
-        else if(player.score == 21){
-            ResolveOutcome(resoult.win);
-        }
+        playerScoreText.text = "Your score: " + player.score;
         
     }
 
@@ -134,30 +143,39 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private resoult ResoultCheck(){
+    private resoult ResultCheck(){
         if(player.score > dealer.score || dealer.score > 21){
             return resoult.win;
         }
         else if(player.score == dealer.score){
-            return resoult.push;
+            return resoult.draw;
         }
-        
         return resoult.loose;
+
+        
     }
 
-    private void ResolveOutcome(resoult resoult){
+    private void ResultOutcome(resoult resoult){
         if(bet > 0){
             if(resoult == resoult.win){
-                player.balance += bet;
+                player.balance += bet*2;
                 
                 bet = 0;
             }
             else if(resoult == resoult.loose){
-                player.balance =- bet;
+                //player.balance =- bet;
             }
         }
         player.SetBalance();
         newGameButton.gameObject.SetActive(true);
+        betButton.gameObject.SetActive(true);
+        betSlider.gameObject.SetActive(true);
+        
+        bet = 0;
+        betSlider.value = 0;
+        betText.text = "bet: " + bet;
+        betButton.GetComponentInChildren<TextMeshProUGUI>().text = ((int)betSlider.value).ToString();
+        balanceText.text = "balance: " + player.balance;
     }
 
 
@@ -174,14 +192,19 @@ public class GameManager : MonoBehaviour
         dealerScoreText.gameObject.SetActive(true);
         dealerScoreText.text = "Dealer score:" + dealer.score;
 
-        ResolveOutcome(ResoultCheck());
+        ResultOutcome(ResultCheck());
         
     }
 
     public void NewGame(){
         betButton.GetComponentInChildren<TextMeshProUGUI>().text = ((int)betSlider.value).ToString();
+        balanceText.text = "balance: " + player.balance;
 
         newGameButton.gameObject.SetActive(false);
+        betButton.gameObject.SetActive(false);
+        betSlider.gameObject.SetActive(false);
+
+
         SetSlider();
 
         for (int i = 0; i < allCards.Count; i++)
@@ -204,6 +227,10 @@ public class GameManager : MonoBehaviour
 
     public void MakeBet(){
         bet = (int)betSlider.value;
+        player.balance -= bet;
+        betText.text = "bet: " + bet;
+        balanceText.text = "balance: " + player.balance;
+
     }
 
 
