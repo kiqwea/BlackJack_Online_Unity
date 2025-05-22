@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     public UnityEngine.UI.Button newGameButton;
     public UnityEngine.UI.Button betButton;
+    public UnityEngine.UI.Button doubleButton;
+
 
     public UnityEngine.UI.Slider betSlider;
     private List<GameObject> allCards = new List<GameObject>();
@@ -45,11 +47,10 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
-        //newGameButton.gameObject.SetActive(false);
         cardSprites = Resources.LoadAll<Sprite>("Sprites/cardatlas");
 
         NewGame();
-        //SpawnSuit();
+        
     }
 
     void DealCards()
@@ -65,17 +66,16 @@ public class GameManager : MonoBehaviour
             TakeNewcard(false);
         }
 
-
         player.CalculateScore();
         dealer.CalculateScore();
         playerScoreText.text = "Your score: " + player.score;
         dealerScoreText.gameObject.SetActive(false);
+        doubleButton.gameObject.SetActive(true);
+
 
        if(player.score == 21){
             ResultOutcome(resoult.win);
        }
-
-
 
     }
 
@@ -88,7 +88,6 @@ public class GameManager : MonoBehaviour
         } while (usedCards.Contains(cardIndex));
         usedCards.Add(cardIndex);
 
-
         GameObject newCard = Instantiate(cardPrefab, playerHand);
         if (isPayer)
         {
@@ -97,11 +96,9 @@ public class GameManager : MonoBehaviour
             card.SetCard(cardIndex, cardSprites[cardIndex], suitSprite);
             player.cards.Add(card);
             player.CalculateScore();
-            
         }
         else
         {
-
             newCard.transform.position = new Vector3(-2 + dealer.cards.Count * 1.1f, 2, -1);
 
             Card card = newCard.GetComponent<Card>();
@@ -111,10 +108,10 @@ public class GameManager : MonoBehaviour
 
             if(dealer.cards.Count == 2)
                 card.ShowBack();
-            
-            
         }
         allCards.Add(newCard);
+
+        doubleButton.gameObject.SetActive(false);
         
 
     }
@@ -135,8 +132,14 @@ public class GameManager : MonoBehaviour
     }
 
     public void DoubleButtonClick(){
+        bet *=2;
+        player.balance -= bet;
+        betText.text = "bet: " + bet;
 
+        TakeNewcard(true);
+        StandButton();
     }
+
     public void SplitButtonClick(){
         if(player.cards.Count == 2 && player.cards[0].rank == player.cards[1].rank){
             
@@ -165,11 +168,16 @@ public class GameManager : MonoBehaviour
             else if(resoult == resoult.loose){
                 //player.balance =- bet;
             }
+            else if(resoult == resoult.draw){
+                player.balance += bet;
+            }
         }
         player.SetBalance();
+        SetSlider();
         newGameButton.gameObject.SetActive(true);
         betButton.gameObject.SetActive(true);
         betSlider.gameObject.SetActive(true);
+        doubleButton.gameObject.SetActive(false);
         
         bet = 0;
         betSlider.value = 0;
@@ -226,10 +234,15 @@ public class GameManager : MonoBehaviour
     }
 
     public void MakeBet(){
-        bet = (int)betSlider.value;
-        player.balance -= bet;
-        betText.text = "bet: " + bet;
-        balanceText.text = "balance: " + player.balance;
+        int newBet = (int)betSlider.value;
+        if(player.balance - newBet >= 0){ 
+            bet += newBet;
+            player.balance -= newBet;
+            betText.text = "bet: " + bet;
+            balanceText.text = "balance: " + player.balance;
+
+
+        }
 
     }
 
