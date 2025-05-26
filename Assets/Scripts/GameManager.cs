@@ -5,6 +5,7 @@ using TMPro;
 using System.Linq;
 using UnityEngine.UIElements;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -132,12 +133,14 @@ public class GameManager : MonoBehaviour
     }
 
     public void DoubleButtonClick(){
-        bet *=2;
-        player.balance -= bet;
-        betText.text = "bet: " + bet;
+        SceneManager.LoadScene("MenuScene");
 
-        TakeNewcard(true);
-        StandButton();
+        // bet *=2;
+        // player.balance -= bet;
+        // betText.text = "bet: " + bet;
+
+        // TakeNewcard(true);
+        // StandButton();
     }
 
     public void SplitButtonClick(){
